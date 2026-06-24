@@ -555,33 +555,20 @@
 
     <!-- YEDEK -->
     <div class="screen" id="screen-yedek" style="overflow-anchor:none">
-      <div style="background:#fff8e1;border:0.5px solid #f0c14b;border-radius:var(--radius-lg);padding:12px 14px;margin-bottom:10px">
-        <div style="font-size:12px;color:#8a6d00;line-height:1.5"><b>Otomatik yedek açık.</b> Uygulama günde bir kez otomatik yedek dosyası indirir (İndirilenler klasörüne "OTOMATIK-" diye başlar). Yine de haftada bir elle yedek alıp WhatsApp'tan kendine göndermeni öneririm.</div>
-      </div>
 
       <div class="sec-lbl">Yedek Al</div>
       <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px;margin-bottom:10px">
         <div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5">
-          <b>Yedek Dosyası İndir</b> — verilerin telefonunun <b>İndirilenler</b> klasörüne bir dosya olarak kaydedilir. Sonra o dosyayı WhatsApp veya Drive'dan kendine gönderip saklarsın. En güvenli yöntem budur.
+          Her çekim eklenince otomatik Telegram'a yedek gönderilir. Elle de gönderebilirsin:
         </div>
-        <button onclick="yedekDosyaIndir()" style="width:100%;padding:15px;background:linear-gradient(135deg,#d61f2c,#a8121e);color:#fff;border:none;border-radius:var(--radius);font-size:16px;font-weight:600;cursor:pointer">
-          Yedek Dosyası İndir
-        </button>
-        <button onclick="telegramYedekGonder(false)" style="width:100%;padding:13px;background:#0088cc;color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
+        <button onclick="telegramYedekGonder(false)" style="width:100%;padding:14px;background:#0088cc;color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
           <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:#fff"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.018 9.51c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.48 14.307l-2.95-.924c-.642-.204-.654-.642.136-.953l11.527-4.448c.535-.194 1.003.131.369.266z"/></svg>
           Telegram'a Yedek Gönder
         </button>
         <div id="yedek-bilgi" style="font-size:12px;color:#157a3a;text-align:center;margin-top:10px;font-weight:500"></div>
-        <button onclick="yedekDosyaPaylas()" style="width:100%;padding:12px;background:none;border:0.5px solid var(--border2);color:var(--text2);border-radius:var(--radius);font-size:13px;cursor:pointer;margin-top:10px">
-          Paylaşmayı dene (bazı telefonlarda)
-        </button>
-      </div>
-
-      <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px;margin-bottom:10px">
-        <div style="font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.5">Kısa yedek için metni de kopyalayabilirsin (küçük veriler için pratik):</div>
-        <details>
-          <summary style="font-size:13px;color:#d61f2c;cursor:pointer;padding:4px 0">Metin olarak yedek göster</summary>
-          <textarea id="yedek-metin-alan" onclick="this.select()" style="width:100%;min-height:90px;font-size:10px;padding:10px;border:1px solid var(--border2);border-radius:8px;background:var(--bg2);color:var(--text);resize:none;box-sizing:border-box;margin:8px 0" placeholder="Yedek metni..."></textarea>
+        <details style="margin-top:10px">
+          <summary style="font-size:13px;color:#d61f2c;cursor:pointer;padding:4px 0">Metin olarak yedek al</summary>
+          <textarea id="yedek-metin-alan" onclick="this.select()" style="width:100%;min-height:90px;font-size:10px;padding:10px;border:1px solid var(--border2);border-radius:8px;background:var(--bg2);color:var(--text);resize:none;box-sizing:border-box;margin:8px 0" placeholder="Yedek metni..." autocorrect="off" autocomplete="off" spellcheck="false"></textarea>
           <button onclick="yedekKopyalaBasit()" style="width:100%;padding:11px;background:#d61f2c;color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer">Metni Kopyala</button>
         </details>
       </div>
@@ -589,7 +576,7 @@
       <div class="sec-lbl">Geri Yükle</div>
       <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px">
         <div style="font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.5">
-          Daha önce indirdiğin yedek <b>dosyasını</b> seç, tüm verilerin geri gelsin.
+          Telegram'dan indirdiğin yedek dosyasını seç:
         </div>
         <button onclick="document.getElementById('yedek-input').click()" style="width:100%;padding:14px;border:none;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;color:#fff;background:#d61f2c;margin-bottom:10px">
           Yedek Dosyası Seç ve Geri Yükle
