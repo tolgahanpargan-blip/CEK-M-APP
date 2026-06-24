@@ -568,6 +568,10 @@
         <button onclick="yedekDosyaIndir()" style="width:100%;padding:15px;background:linear-gradient(135deg,#d61f2c,#a8121e);color:#fff;border:none;border-radius:var(--radius);font-size:16px;font-weight:600;cursor:pointer">
           Yedek Dosyası İndir
         </button>
+        <button onclick="telegramYedekGonder(false)" style="width:100%;padding:13px;background:#0088cc;color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px">
+          <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:#fff"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.018 9.51c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.48 14.307l-2.95-.924c-.642-.204-.654-.642.136-.953l11.527-4.448c.535-.194 1.003.131.369.266z"/></svg>
+          Telegram'a Yedek Gönder
+        </button>
         <div id="yedek-bilgi" style="font-size:12px;color:#157a3a;text-align:center;margin-top:10px;font-weight:500"></div>
         <button onclick="yedekDosyaPaylas()" style="width:100%;padding:12px;background:none;border:0.5px solid var(--border2);color:var(--text2);border-radius:var(--radius);font-size:13px;cursor:pointer;margin-top:10px">
           Paylaşmayı dene (bazı telefonlarda)
@@ -947,6 +951,27 @@ function persist(){
   }catch(e){}
 }
 
+const TELEGRAM_TOKEN='8801945802:AAFje5X8HH66BsGlt6K41Y_x0vHBlJaN6A4';
+const TELEGRAM_CHAT_ID='8097401862';
+
+function telegramYedekGonder(otomatik){
+  try{
+    var metin=yedekMetniUret();
+    var dosyaAdi=otomatik?'OTOMATIK-'+yedekDosyaAdi():yedekDosyaAdi();
+    var blob=new Blob([metin],{type:'application/json'});
+    var formData=new FormData();
+    formData.append('chat_id',TELEGRAM_CHAT_ID);
+    formData.append('document',blob,dosyaAdi);
+    formData.append('caption',otomatik?'🔄 Otomatik yedek - '+new Date().toLocaleString('tr-TR'):'📦 Manuel yedek - '+new Date().toLocaleString('tr-TR'));
+    fetch('https://api.telegram.org/bot'+TELEGRAM_TOKEN+'/sendDocument',{
+      method:'POST',body:formData
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.ok){if(!otomatik)toast('✅ Telegram yedek gönderildi!');}
+      else{if(!otomatik)toast('❌ Telegram hatası: '+d.description);}
+    }).catch(function(){if(!otomatik)toast('❌ Telegram bağlantı hatası');});
+  }catch(e){if(!otomatik)toast('❌ Hata: '+e.message);}
+}
+
 // ===== OTOMATIK YEDEK SISTEMI =====
 // Veri kaybına karşı: gün geçtiyse otomatik dosya yedeği indir
 function otomatikYedekKontrol(){
@@ -976,28 +1001,27 @@ function otomatikYedekIndir(){
     a.click();
     document.body.removeChild(a);
     setTimeout(function(){URL.revokeObjectURL(url);},1500);
-    toast('Otomatik yedek alındı (İndirilenler)');
   }catch(e){}
+  // Telegram'a da gönder
+  try{telegramYedekGonder(true);}catch(e){}
 }
 
 // Her çekim/ödeme eklenince telefona yedek dosyası indir
 // Hep aynı isimle iner (cekim-yedek-SON.json) ki İndirilenler dolmasın
 function herKayittaYedek(){
-  // WebIntoApp WebView'da sessizce dene, başarısız olursa geç
   try{
     var metin=yedekMetniUret();
     if(!metin||metin.length<10)return;
-    // Blob yöntemi
-    var blob=new Blob([metin],{type:'application/octet-stream'});
+    var blob=new Blob([metin],{type:'application/json'});
     var url=URL.createObjectURL(blob);
     var a=document.createElement('a');
-    a.href=url;
-    a.download='cekim-yedek-SON.json';
+    a.href=url;a.download='cekim-yedek-SON.json';
     a.style.display='none';
-    document.body.appendChild(a);
-    a.click();
+    document.body.appendChild(a);a.click();
     setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},2000);
   }catch(e){}
+  // Telegram'a sessizce gönder
+  try{telegramYedekGonder(true);}catch(e){}
 }
 
 function cookieDenOku(){
