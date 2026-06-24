@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#111111">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -50,7 +50,6 @@
   .theme-btn{background:none;border:0.5px solid var(--border2);border-radius:var(--radius);padding:6px 10px;cursor:pointer;color:var(--text2);font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;width:34px;height:34px}
   html,body{height:100%;background:var(--bg3);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);overflow:hidden;overscroll-behavior:none;-webkit-overflow-scrolling:touch;font-size:14px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
   /* Tum uygulamayi orantili kucult */
-  body{zoom:0.78}
   .app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto;background:var(--bg3);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}
   .topbar{background:linear-gradient(135deg,#1a1a1a 0%,#000000 100%);border-bottom:2px solid #d61f2c;padding:0 16px 0;flex-shrink:0}
   .topbar-inner{display:flex;align-items:center;justify-content:space-between;padding:13px 0 9px}
@@ -963,13 +962,22 @@ function telegramYedekGonder(otomatik){
     formData.append('chat_id',TELEGRAM_CHAT_ID);
     formData.append('document',blob,dosyaAdi);
     formData.append('caption',otomatik?'🔄 Otomatik yedek - '+new Date().toLocaleString('tr-TR'):'📦 Manuel yedek - '+new Date().toLocaleString('tr-TR'));
+    if(!otomatik)toast('📤 Telegram\'a gönderiliyor...');
     fetch('https://api.telegram.org/bot'+TELEGRAM_TOKEN+'/sendDocument',{
       method:'POST',body:formData
     }).then(function(r){return r.json();}).then(function(d){
-      if(d.ok){if(!otomatik)toast('✅ Telegram yedek gönderildi!');}
-      else{if(!otomatik)toast('❌ Telegram hatası: '+d.description);}
-    }).catch(function(){if(!otomatik)toast('❌ Telegram bağlantı hatası');});
-  }catch(e){if(!otomatik)toast('❌ Hata: '+e.message);}
+      if(d.ok){
+        if(!otomatik)toast('✅ Telegram\'a yedek gönderildi!');
+        else toast('✅ Otomatik yedek Telegram\'a gönderildi');
+      }else{
+        if(!otomatik)toast('❌ Telegram hatası: '+d.description);
+      }
+    }).catch(function(){
+      if(!otomatik)toast('❌ Telegram bağlantı hatası');
+    });
+  }catch(e){
+    if(!otomatik)toast('❌ Hata: '+e.message);
+  }
 }
 
 // ===== OTOMATIK YEDEK SISTEMI =====
