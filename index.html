@@ -506,7 +506,10 @@
             <div style="font-size:14px;font-weight:500;color:var(--text)">Tema</div>
             <div style="font-size:12px;color:var(--text2);margin-top:2px" id="tema-aciklama">Aydınlık mod</div>
           </div>
-          <button onclick="cycleTheme();renderAyarlar()" style="background:var(--text);color:var(--bg);border:none;border-radius:var(--radius);padding:8px 16px;font-size:13px;cursor:pointer;font-weight:500" id="tema-btn-ayarlar"> Karanlık</button>
+          <div style="display:flex;gap:6px">
+            <button onclick="temaOtomatikYap()" style="background:var(--bg2);color:var(--text2);border:0.5px solid var(--border);border-radius:var(--radius);padding:8px 10px;font-size:12px;cursor:pointer">Otomatik</button>
+            <button onclick="cycleTheme();renderAyarlar()" style="background:var(--text);color:var(--bg);border:none;border-radius:var(--radius);padding:8px 16px;font-size:13px;cursor:pointer;font-weight:500" id="tema-btn-ayarlar"> Karanlık</button>
+          </div>
         </div>
       </div>
 
@@ -4485,7 +4488,14 @@ function cycleTheme(){
   _ls.setItem('tema',next);
   updateThemeBtn();
 }
-function updateThemeBtn(){
+function temaOtomatikYap(){
+  try{_ls.removeItem('tema');}catch(e){}
+  var tema=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';
+  document.documentElement.setAttribute('data-theme',tema);
+  updateThemeBtn();
+  renderAyarlar();
+  toast('Tema telefon ayarına göre belirlendi');
+}
   const cur=document.documentElement.getAttribute('data-theme')||'light';
   const btn=document.getElementById('theme-btn');
   if(!btn)return;
@@ -4493,9 +4503,25 @@ function updateThemeBtn(){
   btn.title=cur==='dark'?'Aydınlık moda geç':'Karanlık moda geç';
 }
 (function(){
-  const t=_ls.getItem('tema')||'light';
-  document.documentElement.setAttribute('data-theme',t);
+  // Kullanıcı daha önce tema seçtiyse onu kullan, yoksa sistem temasını algıla
+  var kayitliTema=_ls.getItem('tema');
+  var tema;
+  if(kayitliTema){
+    tema=kayitliTema;
+  }else{
+    tema=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';
+  }
+  document.documentElement.setAttribute('data-theme',tema);
   updateThemeBtn();
+  // Sistem teması değişince güncelle (kullanıcı override etmediyse)
+  if(window.matchMedia){
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(e){
+      if(!_ls.getItem('tema')){
+        document.documentElement.setAttribute('data-theme',e.matches?'dark':'light');
+        updateThemeBtn();
+      }
+    });
+  }
 })();
 
 // ===== RAPOR =====
