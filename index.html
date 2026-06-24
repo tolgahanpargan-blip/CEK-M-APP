@@ -507,8 +507,8 @@
             <div style="font-size:12px;color:var(--text2);margin-top:2px" id="tema-aciklama">Aydınlık mod</div>
           </div>
           <div style="display:flex;gap:6px">
-            <button onclick="temaOtomatikYap()" style="background:var(--bg2);color:var(--text2);border:0.5px solid var(--border);border-radius:var(--radius);padding:8px 10px;font-size:12px;cursor:pointer">Otomatik</button>
-            <button onclick="cycleTheme();renderAyarlar()" style="background:var(--text);color:var(--bg);border:none;border-radius:var(--radius);padding:8px 16px;font-size:13px;cursor:pointer;font-weight:500" id="tema-btn-ayarlar"> Karanlık</button>
+            <button onclick="temaOtomatikYap()" style="background:var(--bg2);color:var(--text2);border:0.5px solid var(--border);border-radius:var(--radius);padding:8px 10px;font-size:12px;cursor:pointer" title="Gün doğumu/batımına göre otomatik">🌅 Otomatik</button>
+            <button onclick="cycleTheme();renderAyarlar()" style="background:var(--text);color:var(--bg);border:none;border-radius:var(--radius);padding:8px 14px;font-size:13px;cursor:pointer;font-weight:500" id="tema-btn-ayarlar">Manuel</button>
           </div>
         </div>
       </div>
@@ -4488,40 +4488,93 @@ function cycleTheme(){
   _ls.setItem('tema',next);
   updateThemeBtn();
 }
+
 function temaOtomatikYap(){
   try{_ls.removeItem('tema');}catch(e){}
-  var tema=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';
-  document.documentElement.setAttribute('data-theme',tema);
+  guneBoreTemaCek();
   updateThemeBtn();
   renderAyarlar();
-  toast('Tema telefon ayarına göre belirlendi');
+  toast('Tema gün doğumu/batımına göre otomatik değişecek');
 }
+
+function guneBoreTemaCek(){
+  if(_ls.getItem('tema'))return;
+  // Konum bazlı gün doğumu/batımı hesapla
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(function(pos){
+      var lat=pos.coords.latitude;
+      var lng=pos.coords.longitude;
+      var times=gundogumBatim(lat,lng,new Date());
+      var now=new Date();
+      var tema=(now>=times.dogum&&now<times.batim)?'light':'dark';
+      document.documentElement.setAttribute('data-theme',tema);
+      updateThemeBtn();
+      // Konum kaydet (her seferinde izin istememeye)
+      try{_ls.setItem('konum_lat',lat);_ls.setItem('konum_lng',lng);}catch(e){}
+    },function(){
+      // Konum izni yoksa kayıtlı konumu dene
+      var lat=parseFloat(_ls.getItem('konum_lat'));
+      var lng=parseFloat(_ls.getItem('konum_lng'));
+      if(!isNaN(lat)&&!isNaN(lng)){
+        var times=gundogumBatim(lat,lng,new Date());
+        var now=new Date();
+        var tema=(now>=times.dogum&&now<times.batim)?'light':'dark';
+        document.documentElement.setAttribute('data-theme',tema);
+      }else{
+        // Konum yok, saate göre
+        var s=new Date().getHours();
+        document.documentElement.setAttribute('data-theme',(s>=6&&s<20)?'light':'dark');
+      }
+      updateThemeBtn();
+    });
+  }else{
+    var s=new Date().getHours();
+    document.documentElement.setAttribute('data-theme',(s>=6&&s<20)?'light':'dark');
+    updateThemeBtn();
+  }
+}
+
+function gundogumBatim(lat,lng,tarih){
+  // Basit gün doğumu/batımı hesabı (Astronomik formül)
+  var J2000=2451545.0;
+  var d=tarih;
+  var n=Math.floor((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/86400000)+2440587.5-J2000+0.5);
+  var Jstar=n-lng/360;
+  var M=(357.5291+0.98560028*Jstar)%360;
+  var Mr=M*Math.PI/180;
+  var C=1.9148*Math.sin(Mr)+0.0200*Math.sin(2*Mr)+0.0003*Math.sin(3*Mr);
+  var lamda=(M+C+180+102.9372)%360;
+  var Jt=J2000+Jstar+0.0053*Math.sin(Mr)-0.0069*Math.sin(2*lamda*Math.PI/180);
+  var sinD=Math.sin(lamda*Math.PI/180)*Math.sin(23.4397*Math.PI/180);
+  var cosH=(-Math.sin(-0.833*Math.PI/180)-Math.sin(lat*Math.PI/180)*sinD)/(Math.cos(lat*Math.PI/180)*Math.cos(Math.asin(sinD)));
+  if(cosH<-1||cosH>1)return{dogum:new Date(0),batim:new Date(86400000)};
+  var H=Math.acos(cosH)*180/Math.PI;
+  var Jdogum=(Jt-H/360-2440587.5)*86400000;
+  var Jbatim=(Jt+H/360-2440587.5)*86400000;
+  return{dogum:new Date(Jdogum),batim:new Date(Jbatim)};
+}
+
+function updateThemeBtn(){
   const cur=document.documentElement.getAttribute('data-theme')||'light';
   const btn=document.getElementById('theme-btn');
-  if(!btn)return;
-  btn.textContent=cur==='dark'?'':'';
-  btn.title=cur==='dark'?'Aydınlık moda geç':'Karanlık moda geç';
+  if(btn){
+    btn.textContent=cur==='dark'?'☀️':'🌙';
+    btn.title=cur==='dark'?'Aydınlık moda geç':'Karanlık moda geç';
+  }
 }
+
 (function(){
-  // Kullanıcı daha önce tema seçtiyse onu kullan, yoksa sistem temasını algıla
   var kayitliTema=_ls.getItem('tema');
-  var tema;
   if(kayitliTema){
-    tema=kayitliTema;
+    document.documentElement.setAttribute('data-theme',kayitliTema);
   }else{
-    tema=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';
+    guneBoreTemaCek();
   }
-  document.documentElement.setAttribute('data-theme',tema);
   updateThemeBtn();
-  // Sistem teması değişince güncelle (kullanıcı override etmediyse)
-  if(window.matchMedia){
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(e){
-      if(!_ls.getItem('tema')){
-        document.documentElement.setAttribute('data-theme',e.matches?'dark':'light');
-        updateThemeBtn();
-      }
-    });
-  }
+  // Her dakika kontrol et (otomatik moddaysa)
+  setInterval(function(){
+    if(!_ls.getItem('tema'))guneBoreTemaCek();
+  },60000);
 })();
 
 // ===== RAPOR =====
