@@ -59,9 +59,8 @@
   .tabs{display:flex;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
   .tabs::-webkit-scrollbar{display:none}
   .tabs::-webkit-scrollbar{display:none}
-  .tab{flex:1;padding:6px 1px;font-size:8px;border:none;background:none;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:1px;transition:color 0.15s;text-align:center;line-height:1.2}
-  .tab svg{width:16px;height:16px}
-  .tab svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.8;fill:none;flex-shrink:0}
+  .tab{flex:1;padding:6px 2px;font-size:10px;border:none;background:none;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;white-space:normal;word-break:keep-all;display:flex;flex-direction:column;align-items:center;gap:2px;transition:color 0.15s;text-align:center;line-height:1.2}
+  .tab svg{width:18px;height:18px;stroke:currentColor;stroke-width:1.8;fill:none;flex-shrink:0}
   .tab.active{color:#0d2d8a;font-weight:700;border-bottom-color:#0d2d8a}
   .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
   .screen{display:none;padding:12px;padding-bottom:80px;flex-direction:column;gap:10px}
@@ -507,7 +506,7 @@
             <div style="font-size:12px;color:var(--text2);margin-top:2px" id="tema-aciklama">Aydınlık mod</div>
           </div>
           <div style="display:flex;gap:6px">
-            <button onclick="temaOtomatikYap()" style="background:var(--bg2);color:var(--text2);border:0.5px solid var(--border);border-radius:var(--radius);padding:8px 10px;font-size:12px;cursor:pointer" title="Gün doğumu/batımına göre otomatik">🌅 Otomatik</button>
+            <button onclick="temaOtomatikYap()" style="background:var(--bg2);color:var(--text2);border:0.5px solid var(--border);border-radius:var(--radius);padding:8px 10px;font-size:12px;cursor:pointer" title="Gün doğumu/batımına göre otomatik">Otomatik</button>
             <button onclick="cycleTheme();renderAyarlar()" style="background:var(--text);color:var(--bg);border:none;border-radius:var(--radius);padding:8px 14px;font-size:13px;cursor:pointer;font-weight:500" id="tema-btn-ayarlar">Manuel</button>
           </div>
         </div>
@@ -562,14 +561,13 @@
       <div class="sec-lbl">Yedek Al</div>
       <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px;margin-bottom:10px">
         <div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5">
-          Her çekim eklenince otomatik Telegram'a yedek gönderilir. Elle de gönderebilirsin:
+          Her çekim eklenince otomatik yedek alınır. Elle de alabilirsin:
         </div>
-        <button onclick="telegramYedekGonder(false)" style="width:100%;padding:14px;background:#0088cc;color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
-          <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:#fff"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.018 9.51c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.48 14.307l-2.95-.924c-.642-.204-.654-.642.136-.953l11.527-4.448c.535-.194 1.003.131.369.266z"/></svg>
-          Telegram'a Yedek Gönder
+        <button onclick="yedekDosyaIndir()" style="width:100%;padding:14px;background:linear-gradient(135deg,#d61f2c,#a8121e);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;margin-bottom:10px">
+          Yedek Dosyası İndir
         </button>
-        <div id="yedek-bilgi" style="font-size:12px;color:#157a3a;text-align:center;margin-top:10px;font-weight:500"></div>
-        <details style="margin-top:10px">
+        <div id="yedek-bilgi" style="font-size:12px;color:#157a3a;text-align:center;margin-bottom:8px;font-weight:500"></div>
+        <details>
           <summary style="font-size:13px;color:#d61f2c;cursor:pointer;padding:4px 0">Metin olarak yedek al</summary>
           <textarea id="yedek-metin-alan" onclick="this.select()" style="width:100%;min-height:90px;font-size:10px;padding:10px;border:1px solid var(--border2);border-radius:8px;background:var(--bg2);color:var(--text);resize:none;box-sizing:border-box;margin:8px 0" placeholder="Yedek metni..." autocorrect="off" autocomplete="off" spellcheck="false"></textarea>
           <button onclick="yedekKopyalaBasit()" style="width:100%;padding:11px;background:#d61f2c;color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer">Metni Kopyala</button>
@@ -579,7 +577,7 @@
       <div class="sec-lbl">Geri Yükle</div>
       <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px">
         <div style="font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.5">
-          Telegram'dan indirdiğin yedek dosyasını seç:
+          Daha önce indirdiğin yedek dosyasını seç:
         </div>
         <button onclick="document.getElementById('yedek-input').click()" style="width:100%;padding:14px;border:none;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;color:#fff;background:#d61f2c;margin-bottom:10px">
           Yedek Dosyası Seç ve Geri Yükle
@@ -940,35 +938,6 @@ function persist(){
   }catch(e){}
 }
 
-const TELEGRAM_TOKEN='8801945802:AAFje5X8HH66BsGlt6K41Y_x0vHBlJaN6A4';
-const TELEGRAM_CHAT_ID='8097401862';
-
-function telegramYedekGonder(otomatik){
-  try{
-    var metin=yedekMetniUret();
-    var dosyaAdi=otomatik?'OTOMATIK-'+yedekDosyaAdi():yedekDosyaAdi();
-    var blob=new Blob([metin],{type:'application/json'});
-    var formData=new FormData();
-    formData.append('chat_id',TELEGRAM_CHAT_ID);
-    formData.append('document',blob,dosyaAdi);
-    formData.append('caption',otomatik?'🔄 Otomatik yedek - '+new Date().toLocaleString('tr-TR'):'📦 Manuel yedek - '+new Date().toLocaleString('tr-TR'));
-    if(!otomatik)toast('📤 Telegram\'a gönderiliyor...');
-    fetch('https://api.telegram.org/bot'+TELEGRAM_TOKEN+'/sendDocument',{
-      method:'POST',body:formData
-    }).then(function(r){return r.json();}).then(function(d){
-      if(d.ok){
-        if(!otomatik)toast('✅ Telegram\'a yedek gönderildi!');
-        else toast('✅ Otomatik yedek Telegram\'a gönderildi');
-      }else{
-        if(!otomatik)toast('❌ Telegram hatası: '+d.description);
-      }
-    }).catch(function(){
-      if(!otomatik)toast('❌ Telegram bağlantı hatası');
-    });
-  }catch(e){
-    if(!otomatik)toast('❌ Hata: '+e.message);
-  }
-}
 
 // ===== OTOMATIK YEDEK SISTEMI =====
 // Veri kaybına karşı: gün geçtiyse otomatik dosya yedeği indir
@@ -1000,8 +969,7 @@ function otomatikYedekIndir(){
     document.body.removeChild(a);
     setTimeout(function(){URL.revokeObjectURL(url);},1500);
   }catch(e){}
-  // Telegram'a da gönder
-  try{telegramYedekGonder(true);}catch(e){}
+
 }
 
 // Her çekim/ödeme eklenince telefona yedek dosyası indir
@@ -1018,8 +986,7 @@ function herKayittaYedek(){
     document.body.appendChild(a);a.click();
     setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},2000);
   }catch(e){}
-  // Telegram'a sessizce gönder
-  try{telegramYedekGonder(true);}catch(e){}
+
 }
 
 function cookieDenOku(){
@@ -1108,11 +1075,11 @@ function cardHTML(r,showDel){
     ${tatilAdi?`<div style="font-size:11px;color:#d61f2c;margin-bottom:3px">🎉 ${tatilAdi}</div>`:''}
     <div class="card-subj">${r.kimle||'&mdash;'}</div>
     <div class="card-meta">
-      ${(r.neyi||r.ne)?`<span>${neyiEmoji(r.neyi||r.ne)} ${r.neyi||r.ne}</span>`:''}
+      ${(r.neyi||r.ne)?`<span>${r.neyi||r.ne}</span>`:''}
       ${r.nerde?`<span>📍 ${r.nerde}</span>`:''}
-      ${r.ne&&r.neyi?`<span>${gorevEmoji(r.ne)} ${r.ne}</span>`:''}
-      ${r.ne&&!r.neyi?`<span>${gorevEmoji(r.ne)} ${r.ne}</span>`:''}      ${r.kimlegitti?`<span>👥 ${r.kimlegitti}</span>`:''}
-      ${r.vakit?`<span>${r.vakit==='sabah'?'🌅':r.vakit==='aksam'?'🌆':'☀️'} ${vakitTxt(r.vakit)}</span>`:''}
+      ${r.ne&&r.neyi?`<span>${r.ne}</span>`:''}
+      ${r.ne&&!r.neyi?`<span>${r.ne}</span>`:''}      ${r.kimlegitti?`<span>👥 ${r.kimlegitti}</span>`:''}
+      ${r.vakit?`<span>${vakitTxt(r.vakit)}</span>`:''}
     </div>
     <div class="card-amts">
       <div class="amt"><span class="amt-lbl">Yevmiye</span><span class="amt-val">${tl(r.yevmiye)}</span></div>
@@ -4556,66 +4523,19 @@ function temaOtomatikYap(){
 
 function guneBoreTemaCek(){
   if(_ls.getItem('tema'))return;
-  // Konum bazlı gün doğumu/batımı hesapla
-  if(navigator.geolocation){
-    navigator.geolocation.getCurrentPosition(function(pos){
-      var lat=pos.coords.latitude;
-      var lng=pos.coords.longitude;
-      var times=gundogumBatim(lat,lng,new Date());
-      var now=new Date();
-      var tema=(now>=times.dogum&&now<times.batim)?'light':'dark';
-      document.documentElement.setAttribute('data-theme',tema);
-      updateThemeBtn();
-      // Konum kaydet (her seferinde izin istememeye)
-      try{_ls.setItem('konum_lat',lat);_ls.setItem('konum_lng',lng);}catch(e){}
-    },function(){
-      // Konum izni yoksa kayıtlı konumu dene
-      var lat=parseFloat(_ls.getItem('konum_lat'));
-      var lng=parseFloat(_ls.getItem('konum_lng'));
-      if(!isNaN(lat)&&!isNaN(lng)){
-        var times=gundogumBatim(lat,lng,new Date());
-        var now=new Date();
-        var tema=(now>=times.dogum&&now<times.batim)?'light':'dark';
-        document.documentElement.setAttribute('data-theme',tema);
-      }else{
-        // Konum yok, saate göre
-        var s=new Date().getHours();
-        document.documentElement.setAttribute('data-theme',(s>=6&&s<20)?'light':'dark');
-      }
-      updateThemeBtn();
-    });
-  }else{
-    var s=new Date().getHours();
-    document.documentElement.setAttribute('data-theme',(s>=6&&s<20)?'light':'dark');
-    updateThemeBtn();
-  }
+  var saat=new Date().getHours();
+  var tema=(saat>=6&&saat<20)?'light':'dark';
+  document.documentElement.setAttribute('data-theme',tema);
+  updateThemeBtn();
 }
 
-function gundogumBatim(lat,lng,tarih){
-  // Basit gün doğumu/batımı hesabı (Astronomik formül)
-  var J2000=2451545.0;
-  var d=tarih;
-  var n=Math.floor((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/86400000)+2440587.5-J2000+0.5);
-  var Jstar=n-lng/360;
-  var M=(357.5291+0.98560028*Jstar)%360;
-  var Mr=M*Math.PI/180;
-  var C=1.9148*Math.sin(Mr)+0.0200*Math.sin(2*Mr)+0.0003*Math.sin(3*Mr);
-  var lamda=(M+C+180+102.9372)%360;
-  var Jt=J2000+Jstar+0.0053*Math.sin(Mr)-0.0069*Math.sin(2*lamda*Math.PI/180);
-  var sinD=Math.sin(lamda*Math.PI/180)*Math.sin(23.4397*Math.PI/180);
-  var cosH=(-Math.sin(-0.833*Math.PI/180)-Math.sin(lat*Math.PI/180)*sinD)/(Math.cos(lat*Math.PI/180)*Math.cos(Math.asin(sinD)));
-  if(cosH<-1||cosH>1)return{dogum:new Date(0),batim:new Date(86400000)};
-  var H=Math.acos(cosH)*180/Math.PI;
-  var Jdogum=(Jt-H/360-2440587.5)*86400000;
-  var Jbatim=(Jt+H/360-2440587.5)*86400000;
-  return{dogum:new Date(Jdogum),batim:new Date(Jbatim)};
-}
+
 
 function updateThemeBtn(){
   const cur=document.documentElement.getAttribute('data-theme')||'light';
   const btn=document.getElementById('theme-btn');
   if(btn){
-    btn.textContent=cur==='dark'?'☀️':'🌙';
+    btn.textContent=cur==='dark'?'Açık':'Koyu';
     btn.title=cur==='dark'?'Aydınlık moda geç':'Karanlık moda geç';
   }
 }
