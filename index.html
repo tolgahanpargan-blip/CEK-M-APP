@@ -1061,19 +1061,58 @@ function initials(n){if(!n)return '?';const p=n.trim().split(' ');return(p.lengt
 function vakitTxt(v){return v==='sabah'?'Sabah':v==='aksam'?'Akşam':v==='tumgun'?'Tüm Gün':'';}
 const trashSvg=`<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>`;
 
+function gorevEmoji(s){
+  if(!s)return '🎬';
+  var l=s.toLowerCase();
+  if(l.includes('kamera'))return '🎥';
+  if(l.includes('fotograf')||l.includes('fotoğraf'))return '📸';
+  if(l.includes('klip'))return '🎬';
+  if(l.includes('asistan'))return '🙋';
+  if(l.includes('acil bask')||l.includes('baski')||l.includes('baskı'))return '⚡';
+  if(l.includes('jimmy')||l.includes('jib'))return '🎦';
+  if(l.includes('hikaye')||l.includes('story'))return '🖼';
+  if(l.includes('gelin takip'))return '👰';
+  if(l.includes('drone'))return '🚁';
+  if(l.includes('ses')||l.includes('audio'))return '🎙';
+  return '🎬';
+}
+function neyiEmoji(s){
+  if(!s)return '🎬';
+  var l=s.toLowerCase();
+  if(l.includes('dugun sünnet')||l.includes('düğün sünnet'))return '🎊';
+  if(l.includes('yemekli sünnet'))return '🍽';
+  if(l.includes('sünnet')||l.includes('sunnet'))return '🤵';
+  if(l.includes('dugun')||l.includes('düğün'))return '💍';
+  if(l.includes('kına')||l.includes('kina'))return '🌹';
+  if(l.includes('nişan')||l.includes('nisan'))return '💍';
+  if(l.includes('mezuniyet'))return '🎓';
+  if(l.includes('gelin alma'))return '👰';
+  if(l.includes('dis cekim')||l.includes('dış çekim'))return '🌄';
+  if(l.includes('yemek'))return '🍽';
+  if(l.includes('dogum')||l.includes('doğum'))return '🎂';
+  if(l.includes('söz')||l.includes('soz'))return '💐';
+  if(l.includes('bebek'))return '👶';
+  if(l.includes('hamile')||l.includes('gebelik'))return '🤰';
+  if(l.includes('konser'))return '🎵';
+  if(l.includes('acilis')||l.includes('açılış'))return '🎀';
+  if(l.includes('toplanti')||l.includes('toplantı'))return '💼';
+  if(l.includes('okul')||l.includes('mezun'))return '🎓';
+  return '🎬';
+}
+
 function cardHTML(r,showDel){
   const kismiKalan=r.odeme==='kismi'?(+r.yevmiye||0)-(+r.kismiTutar||0):0;
   const tatilAdi=(typeof getTatiller==='function'&&r.tarih)?getTatiller(r.tarih.split('-')[0])[r.tarih]:'';
   return`<div class="card" onclick="editRecord('${r.id}')">
     <div class="card-top"><span class="card-date">${fmtDate(r.tarih)}</span><span class="badge ${badgeCls(r.odeme)}">${badgeTxt(r.odeme)}</span></div>
     ${tatilAdi?`<div style="font-size:11px;color:#d61f2c;margin-bottom:3px">🎉 ${tatilAdi}</div>`:''}
-    <div class="card-subj">${r.neyi||r.ne||'&mdash;'}</div>
+    <div class="card-subj">${r.kimle||'&mdash;'}</div>
     <div class="card-meta">
-      ${r.kimle?`<span>${r.kimle}</span>`:''}
-      ${r.kimlegitti?`<span>${r.kimlegitti}</span>`:''}
-      ${r.nerde?`<span>${r.nerde}</span>`:''}
-      ${r.ne?`<span>${r.ne}</span>`:''}
-      ${r.vakit?`<span>${vakitTxt(r.vakit)}</span>`:''}
+      ${(r.neyi||r.ne)?`<span>${neyiEmoji(r.neyi||r.ne)} ${r.neyi||r.ne}</span>`:''}
+      ${r.nerde?`<span>📍 ${r.nerde}</span>`:''}
+      ${r.ne&&r.neyi?`<span>${gorevEmoji(r.ne)} ${r.ne}</span>`:''}
+      ${r.ne&&!r.neyi?`<span>${gorevEmoji(r.ne)} ${r.ne}</span>`:''}      ${r.kimlegitti?`<span>👥 ${r.kimlegitti}</span>`:''}
+      ${r.vakit?`<span>${r.vakit==='sabah'?'🌅':r.vakit==='aksam'?'🌆':'☀️'} ${vakitTxt(r.vakit)}</span>`:''}
     </div>
     <div class="card-amts">
       <div class="amt"><span class="amt-lbl">Yevmiye</span><span class="amt-val">${tl(r.yevmiye)}</span></div>
